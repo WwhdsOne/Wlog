@@ -5,10 +5,7 @@ import (
 	"go.uber.org/zap/zapcore"
 	"io"
 	"os"
-	"zapLog/config"
 )
-
-type Level = zapcore.Level
 
 const (
 	DebugLevel = zapcore.DebugLevel
@@ -24,7 +21,7 @@ type Logger struct {
 	al *zap.AtomicLevel
 }
 
-func Build(out []io.Writer, l config.LogFormatConfig) *Logger {
+func Build(fws []io.Writer, l *LogFormatConfig) *Logger {
 
 	// 初始化日志等级，有对应的动态调整接口
 	al := zap.NewAtomicLevelAt(l.Level)
@@ -33,13 +30,13 @@ func Build(out []io.Writer, l config.LogFormatConfig) *Logger {
 	encoder := Encoder(l.Prefix, l.EncoderLevel, l.IsJson)
 
 	// 创建多个输出目标
-	var writers = make([]zapcore.WriteSyncer, 0, len(out))
+	var writers = make([]zapcore.WriteSyncer, 0, len(fws))
 
 	// 默认输出到控制台
 	writers = append(writers, zapcore.AddSync(os.Stdout))
 
 	// 添加自定义输出目标
-	for _, w := range out {
+	for _, w := range fws {
 		writers = append(writers, zapcore.AddSync(w))
 	}
 
@@ -52,7 +49,7 @@ func Build(out []io.Writer, l config.LogFormatConfig) *Logger {
 	}
 }
 
-func (l *Logger) SetLevel(level Level) {
+func (l *Logger) SetLevel(level zapcore.Level) {
 	if l.al != nil {
 		l.al.SetLevel(level)
 	}
@@ -88,12 +85,16 @@ func (l *Logger) Sync() error {
 	return l.l.Sync()
 }
 
-var std = Build([]io.Writer{}, InfoLevel, "[Zap]", false)
+var std = Build([]io.Writer{}, &LogFormatConfig{
+	Level:           InfoLevel,
+	StacktraceLevel: ErrorLevel,
+	EncoderLevel:    "CapitalColorLevelEncoder",
+	IsJson:          true,
+	Prefix:          "zapLog",
+})
 
 func Default() *Logger         { return std }
 func ReplaceDefault(l *Logger) { std = l }
-
-func SetLevel() { std.SetLevel(level) }
 
 func Debug(msg string, fields ...Field) { std.Debug(msg, fields...) }
 func Info(msg string, fields ...Field)  { std.Info(msg, fields...) }

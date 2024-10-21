@@ -5,12 +5,20 @@ import (
 	"go.uber.org/zap/zaptest"
 	"io"
 	"testing"
-	"zapLog"
+	"zapLog/core"
 )
 
 func TestJSONLogger(t *testing.T) {
+
+	c := core.LogFormatConfig{
+		Level:           zapcore.DebugLevel,
+		Prefix:          "[TEST-ZAP-JSON]",
+		IsJson:          true,
+		EncoderLevel:    "LowercaseLevelEncoder",
+		StacktraceLevel: zapcore.ErrorLevel,
+	}
 	// 创建一个测试日志记录器
-	JsonLogger := zapLog.New([]io.Writer{}, zapcore.DebugLevel, "[TEST-ZAP-JSON]", true)
+	JsonLogger := core.Build([]io.Writer{}, &c)
 
 	// 测试 Debug 方法
 	t.Run("TestDebug", func(t *testing.T) {
