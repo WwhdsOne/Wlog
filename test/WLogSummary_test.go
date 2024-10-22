@@ -1,9 +1,9 @@
 package test
 
 import (
-	"WLog/core"
-	"WLog/writer/file"
-	"WLog/writer/mq"
+	"github.com/WwhdsOne/Wlog/core"
+	"github.com/WwhdsOne/Wlog/writer/file"
+	"github.com/WwhdsOne/Wlog/writer/mq"
 	"go.uber.org/zap/zapcore"
 	"go.uber.org/zap/zaptest"
 	"testing"

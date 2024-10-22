@@ -1,7 +1,7 @@
 package core
 
 import (
-	"WLog/writer"
+	"github.com/WwhdsOne/Wlog/writer"
 )
 
 type LogSummary struct {

@@ -1,7 +1,7 @@
 package test
 
 import (
-	"WLog/core"
+	"github.com/WwhdsOne/Wlog/core"
 	"go.uber.org/zap/zapcore"
 	"go.uber.org/zap/zaptest"
 	"testing"
