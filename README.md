@@ -14,5 +14,16 @@ WLog是一个方便易用的ZapLog二次封装，提供不同编码格式，支�
 - 提供默认日志切割功能
 - 支持消息队列（目前仅支持Kafka向指定topic发送）
 
+# Getting WLog
+
+```bash
+go get -u github.com/WwhdsOne/Wlog
+```
+
 ## Usage
+
+直接使用
+
+```go
+```
 

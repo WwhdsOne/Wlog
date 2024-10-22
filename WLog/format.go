@@ -1,4 +1,4 @@
-package core
+package WLog
 
 import "go.uber.org/zap/zapcore"
 

@@ -1,7 +1,6 @@
 module github.com/WwhdsOne/Wlog
 
 go 1.22.1
-
 require (
 	github.com/IBM/sarama v1.43.3
 	github.com/natefinch/lumberjack v2.0.0+incompatible

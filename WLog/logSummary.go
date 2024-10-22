@@ -1,4 +1,4 @@
-package core
+package WLog
 
 import (
 	"github.com/WwhdsOne/Wlog/writer"
