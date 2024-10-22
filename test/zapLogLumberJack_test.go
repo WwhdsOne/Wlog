@@ -3,7 +3,6 @@ package test
 import (
 	"go.uber.org/zap/zapcore"
 	"go.uber.org/zap/zaptest"
-	"io"
 	"testing"
 	"zapLog/core"
 	"zapLog/writer/file"
@@ -18,12 +17,15 @@ func TestLumberJackLogger(t *testing.T) {
 		StacktraceLevel: zapcore.ErrorLevel,
 	}
 
-	f := file.LocalFileLogWriter{
+	f := &file.LocalFileLogWriter{
 		FileName:    "test.log",
-		FileDirPath: "/Users/wwhds/Programming_Learning/Project/zapLog/test",
+		FileDirPath: "/Users/wwhds/Programming_Learning/Project/zapLog/test/log",
 	}
 
-	lumberjackLogger := core.Build([]io.Writer{f.CreateWriter()}, &c)
+	lumberjackLogger := core.Build(&core.LogSummary{
+		LocalFileWriter: f,
+		LogFormatConfig: &c,
+	})
 
 	// 测试 Debug 方法
 	t.Run("TestDebug", func(t *testing.T) {

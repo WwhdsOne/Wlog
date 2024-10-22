@@ -3,7 +3,6 @@ package test
 import (
 	"go.uber.org/zap/zapcore"
 	"go.uber.org/zap/zaptest"
-	"io"
 	"testing"
 	"zapLog/core"
 )
@@ -18,7 +17,9 @@ func TestJSONLogger(t *testing.T) {
 		StacktraceLevel: zapcore.ErrorLevel,
 	}
 	// 创建一个测试日志记录器
-	JsonLogger := core.Build([]io.Writer{}, &c)
+	JsonLogger := core.Build(&core.LogSummary{
+		LogFormatConfig: &c,
+	})
 
 	// 测试 Debug 方法
 	t.Run("TestDebug", func(t *testing.T) {
