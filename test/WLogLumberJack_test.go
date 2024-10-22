@@ -1,11 +1,11 @@
 package test
 
 import (
+	"WLog/core"
+	"WLog/writer/file"
 	"go.uber.org/zap/zapcore"
 	"go.uber.org/zap/zaptest"
 	"testing"
-	"zapLog/core"
-	"zapLog/writer/file"
 )
 
 func TestLumberJackLogger(t *testing.T) {
@@ -19,7 +19,7 @@ func TestLumberJackLogger(t *testing.T) {
 
 	f := &file.LocalFileLogWriter{
 		FileName:    "test.log",
-		FileDirPath: "/Users/wwhds/Programming_Learning/Project/zapLog/test/log",
+		FileDirPath: "./log",
 	}
 
 	lumberjackLogger := core.Build(&core.LogSummary{

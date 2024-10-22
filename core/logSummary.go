@@ -1,7 +1,7 @@
 package core
 
 import (
-	"zapLog/writer"
+	"WLog/writer"
 )
 
 type LogSummary struct {

@@ -1,11 +1,11 @@
 package test
 
 import (
+	"WLog/core"
+	"WLog/writer/mq"
 	"go.uber.org/zap/zapcore"
 	"go.uber.org/zap/zaptest"
 	"testing"
-	"zapLog/core"
-	"zapLog/writer/mq"
 )
 
 func TestKafkaLogger(t *testing.T) {
@@ -25,7 +25,6 @@ func TestKafkaLogger(t *testing.T) {
 	}
 	// 创建一个测试日志记录器
 	l := &core.LogSummary{
-		LocalFileWriter: nil,
 		KafkaWriter:     k,
 		LogFormatConfig: &c,
 	}

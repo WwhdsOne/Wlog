@@ -1,12 +1,12 @@
 package test
 
 import (
+	"WLog/core"
+	"WLog/writer/file"
+	"WLog/writer/mq"
 	"go.uber.org/zap/zapcore"
 	"go.uber.org/zap/zaptest"
 	"testing"
-	"zapLog/core"
-	"zapLog/writer/file"
-	"zapLog/writer/mq"
 )
 
 func TestSummaryLogger(t *testing.T) {

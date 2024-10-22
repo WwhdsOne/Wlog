@@ -1,4 +1,4 @@
-module zapLog
+module WLog
 
 go 1.22
 
