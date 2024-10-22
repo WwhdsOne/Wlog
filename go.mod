@@ -1,7 +1,6 @@
 module github.com/WwhdsOne/Wlog
 
-
-go 1.22
+go 1.22.1
 
 require (
 	github.com/IBM/sarama v1.43.3
