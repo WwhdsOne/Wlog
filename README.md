@@ -23,26 +23,20 @@ go get -u github.com/natefinch/lumberjack
 go get -u github.com/IBM/sarama 
 ```
 
-# Effect Demonstration
-
-```bash
-{"level":"debug","time":"2024-10-22 14:10:39.550","msg":"Hello Debug"}
-{"level":"info","time":"2024-10-22 14:10:39.549","msg":"Hello World"}
-{"level":"warn","time":"2024-10-22 14:15:42.913","msg":"Warn message"}
-{"level":"error","time":"2024-10-22 14:15:42.913","msg":"Error message","stacktrace":"github.com/WwhdsOne/Wlog/WLog.(*Logger).Error/WLog/WLog/WLog.go:85\ncommand-line-arguments.TestJSONLogger.func4/WLog/test/WLogJson_test.go:41\ntesting.tRunner\n\t/Users/wwhds/go/go1.22.1/src/testing/testing.go:1689"}
-{"level":"panic","time":"2024-10-22 14:15:42.914","msg":"Panic message","stacktrace":"github.com/WwhdsOne/Wlog/WLog.(*Logger).Panic/WLog/WLog/WLog.go:89\ncommand-line-arguments.TestJSONLogger.func5/WLog/test/WLogJson_test.go:51\ntesting.tRunner\n\t/Users/wwhds/go/go1.22.1/src/testing/testing.go:1689"}
-```
-
 ## Usage
 
 ### Direct Usage
 
 ```go
 func main() {
-	logger := WLog.Default()
-	logger.Info("Hello World")
-	logger.Debug("Hello World")
-	logger.Error("Hello World")
+  l := WLog.Default()
+  lo := &WLog.Loptions{
+    Package: "testPackage",
+    Option:  []any{"LOL", 123},
+  }
+  l.Debug("Debug %s %d", lo)
+  l.Info("Info %s %d", lo)
+  l.Warn("Warn %s %d", lo)
 }
 ```
 
@@ -53,11 +47,14 @@ ls := &WLog.LogSummary{
   LocalFileWriter: &file.LocalFileLogWriter{FileName: "app.log", FileDirPath: "./logs"},
 }
 fmt.Println(ls)
-
+lo := &WLog.Loptions{
+    Package: "testPackage",
+    Option:  []any{"LOL", 123},
+  }
 build := WLog.Build(ls)
-build.Info("Hello World")
-build.Error("Hello Error")
-build.Debug("Hello Debug")
+build.Info("Hello World",lo)
+build.Error("Hello Error",lo)
+build.Debug("Hello Debug",lo)
 ```
 
 ### Specify Kafka and Topic
@@ -71,11 +68,14 @@ ls := &WLog.LogSummary{
                                        },
 }
 fmt.Println(ls)
-
+lo := &WLog.Loptions{
+  Package: "testPackage",
+  Option:  []any{"LOL", 123},
+}
 build := WLog.Build(ls)
-build.Info("Hello World")
-build.Error("Hello Error")
-build.Debug("Hello Debug")
+build.Info("Hello World",lo)
+build.Error("Hello Error",lo)
+build.Debug("Hello Debug",lo)
 ```
 
 ### Modify Log Format
@@ -92,16 +92,27 @@ ls := &WLog.LogSummary{
   },
 }
 fmt.Println(ls)
-
+lo := &WLog.Loptions{
+    Package: "testPackage",
+    Option:  []any{"LOL", 123},
+  }
 build := WLog.Build(ls)
-build.Info("Hello World")
-build.Error("Hello Error")
-build.Debug("Hello Debug")
+build.Info("Hello World",lo)
+build.Error("Hello Error",lo)
+build.Debug("Hello Debug",lo)
 ```
 
 ### Result
 
 ```bash
-[TEST-ZAP-JSON] 2024-10-22 14:12:35.517 INFO    Hello World
-[TEST-ZAP-JSON] 2024-10-22 14:12:35.519 ERROR   Hello Error
+
+> JSON
+{"level":"info","time":"2024-10-23 14:14:48.293","msg":"[TEST-ZAP-JSON] package = test Info message LOL 123"}
+Message sent to partition 0 at offset 20116
+{"level":"info","time":"2024-10-23 14:14:48.295","msg":"[TEST-ZAP-JSON] package = test Info message LOL 123"}
+
+> Default
+2024-10-23 14:30:29.550 DEBUG   [TEST-ZAP-JSON] Debug message
+2024-10-23 14:30:29.550 INFO    [TEST-ZAP-JSON] package = test Info message LOL 123
+2024-10-23 14:30:29.550 WARN    [TEST-ZAP-JSON] package = test Warn message LOL 123
 ```
