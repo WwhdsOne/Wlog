@@ -84,11 +84,11 @@ build.Debug("Hello Debug",lo)
 ls := &WLog.LogSummary{
   LocalFileWriter: &file.LocalFileLogWriter{FileName: "app.log", FileDirPath: "./logs"},
   LogFormatConfig: &WLog.LogFormatConfig{
-    Level:           zapcore.DebugLevel,
+    Level:           WLog.DebugLevel,
     Prefix:          "[TEST-ZAP-JSON]",
     IsJson:          false,
     EncoderLevel:    "CapitalColorLevelEncoder",
-    StacktraceLevel: zapcore.ErrorLevel,
+    StacktraceLevel: WLog.ErrorLevel,
   },
 }
 fmt.Println(ls)
@@ -105,7 +105,6 @@ build.Debug("Hello Debug",lo)
 ### Result
 
 ```bash
-
 > JSON
 {"level":"info","time":"2024-10-23 14:14:48.293","msg":"[TEST-ZAP-JSON] package = test Info message LOL 123"}
 Message sent to partition 0 at offset 20116

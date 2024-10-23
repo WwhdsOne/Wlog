@@ -25,10 +25,7 @@ type Logger struct {
 func Build(ls *LogSummary) *Logger {
 
 	// 获取日志
-	lfc := ls.LogFormatConfig
-	if lfc == nil {
-		lfc = NewLogFormatConfig()
-	}
+	lfc := fillEmptyLogFormat(ls.LogFormatConfig)
 	// 初始化日志等级，有对应的动态调整接口
 
 	al := zap.NewAtomicLevelAt(lfc.Level)
@@ -60,8 +57,28 @@ func Build(ls *LogSummary) *Logger {
 	return &Logger{
 		l:      zap.New(core, zap.AddStacktrace(lfc.StacktraceLevel)),
 		al:     &al,
-		prefix: lfc.Prefix,
+		prefix: "[" + lfc.Prefix + "]",
 	}
+}
+
+// SetDefaultLogFormat 设置默认日志格式
+func fillEmptyLogFormat(lfc *LogFormatConfig) *LogFormatConfig {
+	if lfc == nil {
+		return NewLogFormatConfig()
+	}
+	// 前缀为空则使用程序名
+	if lfc.Prefix == "" {
+		lfc.Prefix = os.Args[0]
+	}
+	// 编码等级为空则使用小写五色编码
+	if lfc.EncoderLevel == "" {
+		lfc.EncoderLevel = "LowercaseLevelEncoder"
+	}
+	// 堆栈跟踪等级为错误等级
+	if lfc.StacktraceLevel == nil {
+		lfc.StacktraceLevel = ErrorLevel
+	}
+	return lfc
 }
 
 // SetLevel 设置日志等级
@@ -73,9 +90,9 @@ func (l *Logger) SetLevel(level zapcore.Level) {
 
 func (l *Logger) formatMessage(msg string, loptions *Loptions) string {
 	if loptions.Package != "" {
-		msg = "package = " + loptions.Package + " " + msg
+		msg = fmt.Sprintf("package = %s | %s", loptions.Package, msg)
 	}
-	msg = l.prefix + " " + msg
+	msg = l.prefix + " | " + msg
 	if len(loptions.Option) != 0 {
 		msg = fmt.Sprintf(msg, loptions.Option...)
 	}
