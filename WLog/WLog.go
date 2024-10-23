@@ -33,6 +33,20 @@ func Build(ls *LogSummary) *Logger {
 	// 初始化日志编码格式
 	encoder := Encoder(lfc.EncoderLevel, lfc.IsJson)
 
+	writers := ls.buildWriters()
+
+	// 创建日志输出对象
+	core := zapcore.NewCore(encoder, zapcore.NewMultiWriteSyncer(writers...), al)
+
+	return &Logger{
+		l:      zap.New(core, zap.AddStacktrace(lfc.StacktraceLevel)),
+		al:     &al,
+		prefix: "[" + lfc.Prefix + "]",
+	}
+}
+
+// 新增符合zap要求的Writer
+func (ls *LogSummary) buildWriters() []zapcore.WriteSyncer {
 	// 创建多个输出目标
 	var writers = make([]zapcore.WriteSyncer, 0)
 
@@ -51,29 +65,30 @@ func Build(ls *LogSummary) *Logger {
 		writers = append(writers, zapcore.AddSync(kw))
 	}
 
-	// 创建日志输出对象
-	core := zapcore.NewCore(encoder, zapcore.NewMultiWriteSyncer(writers...), al)
-
-	return &Logger{
-		l:      zap.New(core, zap.AddStacktrace(lfc.StacktraceLevel)),
-		al:     &al,
-		prefix: "[" + lfc.Prefix + "]",
+	// 如果配置了syslog输出，则追加到输出目标
+	if sl := ls.SysLogWriter; sl != nil {
+		sl.InitWriter()
+		writers = append(writers, zapcore.AddSync(sl))
 	}
+	return writers
 }
 
-// SetDefaultLogFormat 设置默认日志格式
+// fillEmptyLogFormat 设置默认日志格式
 func fillEmptyLogFormat(lfc *LogFormatConfig) *LogFormatConfig {
 	if lfc == nil {
 		return NewLogFormatConfig()
 	}
+
 	// 前缀为空则使用程序名
 	if lfc.Prefix == "" {
 		lfc.Prefix = os.Args[0]
 	}
+
 	// 编码等级为空则使用小写五色编码
 	if lfc.EncoderLevel == "" {
 		lfc.EncoderLevel = "LowercaseLevelEncoder"
 	}
+
 	// 堆栈跟踪等级为错误等级
 	if lfc.StacktraceLevel == nil {
 		lfc.StacktraceLevel = ErrorLevel

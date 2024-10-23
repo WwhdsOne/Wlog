@@ -3,6 +3,7 @@ package mq
 import (
 	"fmt"
 	"github.com/IBM/sarama"
+	"github.com/WwhdsOne/Wlog/WLog"
 	"log"
 )
 
@@ -36,13 +37,10 @@ func (k *KafkaLogProducer) Write(p []byte) (n int, err error) {
 		Partition: int32(k.Partition),      // 使用结构体中的 partition
 		Value:     sarama.StringEncoder(p), // 使用传入的 []byte
 	}
-
-	partition, offset, err := k.producer.SendMessage(message)
+	_, _, err = k.producer.SendMessage(message)
 	if err != nil {
-		log.Printf("Failed to send message: %v", err)
+		WLog.Error(err.Error())
 		return 0, err
-	} else {
-		fmt.Printf("Message sent to partition %d at offset %d\n", partition, offset)
 	}
 	return len(p), nil
 }
