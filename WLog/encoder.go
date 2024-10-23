@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-func Encoder(prefix, encodeLevel string, isJson bool) zapcore.Encoder {
+func Encoder(encodeLevel string, isJson bool) zapcore.Encoder {
 	// 创建一个 zapcore.EncoderConfig 配置对象
 	config := zapcore.EncoderConfig{
 		TimeKey:        "time",                         // 时间字段的键名
@@ -18,25 +18,19 @@ func Encoder(prefix, encodeLevel string, isJson bool) zapcore.Encoder {
 		EncodeLevel:    LevelEncoder(encodeLevel),      // 大写编码器带颜色
 		EncodeCaller:   zapcore.FullCallerEncoder,      // 调用者编码器，使用完整路径
 		EncodeDuration: zapcore.SecondsDurationEncoder, // 持续时间编码器，使用秒数
+		EncodeTime: func(t time.Time, encoder zapcore.PrimitiveArrayEncoder) { // 时间编码器
+			encoder.AppendString(t.Format("2006-01-02 15:04:05.000"))
+		},
 	}
-
-	// 时间格式
-	encodeTimeFormat := "2006-01-02 15:04:05.000"
-
 	// 根据配置中的格式选择编码器
 	if isJson == true {
 		// 如果格式为 "json"，则返回 JSON 编码器
 		config.EncodeLevel = zapcore.LowercaseLevelEncoder
-		config.EncodeTime = func(t time.Time, encoder zapcore.PrimitiveArrayEncoder) {
-			encoder.AppendString(t.Format(encodeTimeFormat))
-		}
 		return zapcore.NewJSONEncoder(config)
 	}
 	// 否则返回控制台编码器
 	config.EncodeLevel = zapcore.CapitalColorLevelEncoder
-	config.EncodeTime = func(t time.Time, encoder zapcore.PrimitiveArrayEncoder) {
-		encoder.AppendString(prefix + " " + t.Format(encodeTimeFormat))
-	}
+
 	return zapcore.NewConsoleEncoder(config)
 }
 

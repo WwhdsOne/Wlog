@@ -1,6 +1,7 @@
 package WLog
 
 import (
+	"fmt"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"os"
@@ -16,8 +17,9 @@ const (
 )
 
 type Logger struct {
-	l  *zap.Logger
-	al *zap.AtomicLevel
+	l      *zap.Logger
+	al     *zap.AtomicLevel
+	prefix string // 日志前缀
 }
 
 func Build(ls *LogSummary) *Logger {
@@ -32,7 +34,7 @@ func Build(ls *LogSummary) *Logger {
 	al := zap.NewAtomicLevelAt(lfc.Level)
 
 	// 初始化日志编码格式
-	encoder := Encoder(lfc.Prefix, lfc.EncoderLevel, lfc.IsJson)
+	encoder := Encoder(lfc.EncoderLevel, lfc.IsJson)
 
 	// 创建多个输出目标
 	var writers = make([]zapcore.WriteSyncer, 0)
@@ -56,41 +58,52 @@ func Build(ls *LogSummary) *Logger {
 	core := zapcore.NewCore(encoder, zapcore.NewMultiWriteSyncer(writers...), al)
 
 	return &Logger{
-		l:  zap.New(core, zap.AddStacktrace(lfc.StacktraceLevel)),
-		al: &al,
+		l:      zap.New(core, zap.AddStacktrace(lfc.StacktraceLevel)),
+		al:     &al,
+		prefix: lfc.Prefix,
 	}
 }
 
+// SetLevel 设置日志等级
 func (l *Logger) SetLevel(level zapcore.Level) {
 	if l.al != nil {
 		l.al.SetLevel(level)
 	}
 }
 
-type Field = zap.Field
-
-func (l *Logger) Debug(msg string, fields ...zap.Field) {
-	l.l.Debug(msg, fields...)
+func (l *Logger) formatMessage(msg string, loptions *Loptions) string {
+	if loptions.Package != "" {
+		msg = "package = " + loptions.Package + " " + msg
+	}
+	msg = l.prefix + " " + msg
+	if len(loptions.Option) != 0 {
+		msg = fmt.Sprintf(msg, loptions.Option...)
+	}
+	return msg
 }
 
-func (l *Logger) Info(msg string, fields ...zap.Field) {
-	l.l.Info(msg, fields...)
+func (l *Logger) Debug(msg string, loptions *Loptions) {
+	l.l.Debug(l.formatMessage(msg, loptions))
 }
 
-func (l *Logger) Warn(msg string, fields ...zap.Field) {
-	l.l.Warn(msg, fields...)
+func (l *Logger) Info(msg string, loptions *Loptions) {
+	l.l.Info(l.formatMessage(msg, loptions))
 }
 
-func (l *Logger) Error(msg string, fields ...zap.Field) {
-	l.l.Error(msg, fields...)
+func (l *Logger) Warn(msg string, loptions *Loptions) {
+	l.l.Warn(l.formatMessage(msg, loptions))
 }
 
-func (l *Logger) Panic(msg string, fields ...zap.Field) {
-	l.l.Panic(msg, fields...)
+func (l *Logger) Error(msg string, loptions *Loptions) {
+	l.l.Error(l.formatMessage(msg, loptions))
 }
 
-func (l *Logger) Fatal(msg string, fields ...zap.Field) {
-	l.l.Fatal(msg, fields...)
+func (l *Logger) Panic(msg string, loptions *Loptions) {
+	l.l.Panic(l.formatMessage(msg, loptions))
+}
+
+func (l *Logger) Fatal(msg string, loptions *Loptions) {
+	l.l.Fatal(l.formatMessage(msg, loptions))
 }
 
 // Sync 同步日志
@@ -103,11 +116,11 @@ var std = Build(&LogSummary{})
 func Default() *Logger         { return std }
 func ReplaceDefault(l *Logger) { std = l }
 
-func Debug(msg string, fields ...Field) { std.Debug(msg, fields...) }
-func Info(msg string, fields ...Field)  { std.Info(msg, fields...) }
-func Warn(msg string, fields ...Field)  { std.Warn(msg, fields...) }
-func Error(msg string, fields ...Field) { std.Error(msg, fields...) }
-func Panic(msg string, fields ...Field) { std.Panic(msg, fields...) }
-func Fatal(msg string, fields ...Field) { std.Fatal(msg, fields...) }
+func Debug(msg string) { std.Debug(msg, &Loptions{}) }
+func Info(msg string)  { std.Info(msg, &Loptions{}) }
+func Warn(msg string)  { std.Warn(msg, &Loptions{}) }
+func Error(msg string) { std.Error(msg, &Loptions{}) }
+func Panic(msg string) { std.Panic(msg, &Loptions{}) }
+func Fatal(msg string) { std.Fatal(msg, &Loptions{}) }
 
 func Sync() error { return std.Sync() }
