@@ -25,12 +25,9 @@ func Encoder(encodeLevel string, isJson bool) zapcore.Encoder {
 	// 根据配置中的格式选择编码器
 	if isJson == true {
 		// 如果格式为 "json"，则返回 JSON 编码器
-		config.EncodeLevel = zapcore.LowercaseLevelEncoder
 		return zapcore.NewJSONEncoder(config)
 	}
 	// 否则返回控制台编码器
-	config.EncodeLevel = zapcore.CapitalColorLevelEncoder
-
 	return zapcore.NewConsoleEncoder(config)
 }
 
