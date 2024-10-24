@@ -1,8 +1,15 @@
-package WLog
+package core
 
 import (
 	"go.uber.org/zap/zapcore"
 	"time"
+)
+
+const (
+	LowercaseLevelEncoder      = "LowercaseLevelEncoder"      // 小写编码器(默认)
+	LowercaseColorLevelEncoder = "LowercaseColorLevelEncoder" // 小写编码器带颜色
+	CapitalLevelEncoder        = "CapitalLevelEncoder"        // 大写编码器
+	CapitalColorLevelEncoder   = "CapitalColorLevelEncoder"   // 大写编码器带颜色
 )
 
 func Encoder(encodeLevel string, isJson bool) zapcore.Encoder {

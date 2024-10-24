@@ -7,9 +7,9 @@ import (
 )
 
 type LocalFileLogWriter struct {
-	FileDirPath string `yaml:"fileDirPath"` //文件目录
-	FileName    string `yaml:"fileName"`    //文件名
-	Writer      io.Writer
+	FileDirPath string    //文件目录
+	FileName    string    //文件名
+	Writer      io.Writer // 日志写入器
 }
 
 // InitWriter 创建一个日志切割对象

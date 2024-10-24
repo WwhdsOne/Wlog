@@ -1,7 +1,7 @@
 package sys
 
 import (
-	"github.com/WwhdsOne/Wlog/WLog"
+	"github.com/WwhdsOne/Wlog"
 	"log/syslog"
 	"strconv"
 )

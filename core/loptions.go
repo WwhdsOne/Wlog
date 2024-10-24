@@ -1,4 +1,4 @@
-package WLog
+package core
 
 type Loptions struct {
 	Package string // 包名

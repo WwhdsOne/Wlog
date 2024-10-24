@@ -3,16 +3,16 @@ package mq
 import (
 	"fmt"
 	"github.com/IBM/sarama"
-	"github.com/WwhdsOne/Wlog/WLog"
+	"github.com/WwhdsOne/Wlog"
 	"log"
 )
 
 type KafkaLogProducer struct {
-	Topic     string `yaml:"topic"`
-	Partition int    `yaml:"partition"`
-	Host      string `yaml:"host"`
-	Port      int    `yaml:"port"`
-	producer  sarama.SyncProducer
+	Topic     string              // Kafka topic
+	Partition int                 // Kafka partition
+	Host      string              // Kafka broker host
+	Port      int                 // Kafka broker port
+	producer  sarama.SyncProducer // Kafka producer
 }
 
 // InitWriter InitProducer 初始化 Kafka 生产者
