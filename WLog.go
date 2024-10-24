@@ -2,10 +2,17 @@ package WLog
 
 import (
 	"fmt"
-	"github.com/WwhdsOne/Wlog/core"
+	"github.com/WwhdsOne/Wlog/wlcore"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"os"
+)
+
+const (
+	LowercaseLevelEncoder      = "LowercaseLevelEncoder"      // 小写编码器(默认)
+	LowercaseColorLevelEncoder = "LowercaseColorLevelEncoder" // 小写编码器带颜色
+	CapitalLevelEncoder        = "CapitalLevelEncoder"        // 大写编码器
+	CapitalColorLevelEncoder   = "CapitalColorLevelEncoder"   // 大写编码器带颜色
 )
 
 const (
@@ -23,7 +30,7 @@ type Logger struct {
 	prefix string           // 日志前缀
 }
 
-func Build(ls *core.LogSummary) *Logger {
+func Build(ls *wlcore.LogSummary) *Logger {
 
 	// 获取日志
 	lfc := fillEmptyLogFormat(ls.LogFormatConfig)
@@ -32,7 +39,7 @@ func Build(ls *core.LogSummary) *Logger {
 	al := zap.NewAtomicLevelAt(lfc.Level)
 
 	// 初始化日志编码格式
-	encoder := core.Encoder(lfc.EncoderLevel, lfc.IsJson)
+	encoder := wlcore.Encoder(lfc.EncoderLevel, lfc.IsJson)
 
 	writers := ls.BuildWriters()
 
@@ -47,9 +54,9 @@ func Build(ls *core.LogSummary) *Logger {
 }
 
 // fillEmptyLogFormat 设置默认日志格式
-func fillEmptyLogFormat(lfc *core.LogFormatConfig) *core.LogFormatConfig {
+func fillEmptyLogFormat(lfc *wlcore.LogFormatConfig) *wlcore.LogFormatConfig {
 	if lfc == nil {
-		return core.NewLogFormatConfig()
+		return wlcore.NewLogFormatConfig()
 	}
 
 	// 前缀为空则使用程序名
@@ -76,7 +83,7 @@ func (l *Logger) SetLevel(level zapcore.Level) {
 	}
 }
 
-func (l *Logger) formatMessage(msg string, loptions *core.Loptions) string {
+func (l *Logger) formatMessage(msg string, loptions *wlcore.Loptions) string {
 	if loptions.Package != "" {
 		msg = fmt.Sprintf("package = %s | %s", loptions.Package, msg)
 	}
@@ -87,27 +94,27 @@ func (l *Logger) formatMessage(msg string, loptions *core.Loptions) string {
 	return msg
 }
 
-func (l *Logger) Debug(msg string, loptions *core.Loptions) {
+func (l *Logger) Debug(msg string, loptions *wlcore.Loptions) {
 	l.l.Debug(l.formatMessage(msg, loptions))
 }
 
-func (l *Logger) Info(msg string, loptions *core.Loptions) {
+func (l *Logger) Info(msg string, loptions *wlcore.Loptions) {
 	l.l.Info(l.formatMessage(msg, loptions))
 }
 
-func (l *Logger) Warn(msg string, loptions *core.Loptions) {
+func (l *Logger) Warn(msg string, loptions *wlcore.Loptions) {
 	l.l.Warn(l.formatMessage(msg, loptions))
 }
 
-func (l *Logger) Error(msg string, loptions *core.Loptions) {
+func (l *Logger) Error(msg string, loptions *wlcore.Loptions) {
 	l.l.Error(l.formatMessage(msg, loptions))
 }
 
-func (l *Logger) Panic(msg string, loptions *core.Loptions) {
+func (l *Logger) Panic(msg string, loptions *wlcore.Loptions) {
 	l.l.Panic(l.formatMessage(msg, loptions))
 }
 
-func (l *Logger) Fatal(msg string, loptions *core.Loptions) {
+func (l *Logger) Fatal(msg string, loptions *wlcore.Loptions) {
 	l.l.Fatal(l.formatMessage(msg, loptions))
 }
 
@@ -116,16 +123,16 @@ func (l *Logger) Sync() error {
 	return l.l.Sync()
 }
 
-var std = Build(&core.LogSummary{})
+var std = Build(&wlcore.LogSummary{})
 
 func Default() *Logger         { return std }
 func ReplaceDefault(l *Logger) { std = l }
 
-func Debug(msg string) { std.Debug(msg, &core.Loptions{}) }
-func Info(msg string)  { std.Info(msg, &core.Loptions{}) }
-func Warn(msg string)  { std.Warn(msg, &core.Loptions{}) }
-func Error(msg string) { std.Error(msg, &core.Loptions{}) }
-func Panic(msg string) { std.Panic(msg, &core.Loptions{}) }
-func Fatal(msg string) { std.Fatal(msg, &core.Loptions{}) }
+func Debug(msg string) { std.Debug(msg, &wlcore.Loptions{}) }
+func Info(msg string)  { std.Info(msg, &wlcore.Loptions{}) }
+func Warn(msg string)  { std.Warn(msg, &wlcore.Loptions{}) }
+func Error(msg string) { std.Error(msg, &wlcore.Loptions{}) }
+func Panic(msg string) { std.Panic(msg, &wlcore.Loptions{}) }
+func Fatal(msg string) { std.Fatal(msg, &wlcore.Loptions{}) }
 
 func Sync() error { return std.Sync() }

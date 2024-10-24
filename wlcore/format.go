@@ -1,4 +1,4 @@
-package core
+package wlcore
 
 import (
 	"go.uber.org/zap/zapcore"

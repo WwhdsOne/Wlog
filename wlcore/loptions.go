@@ -1,4 +1,4 @@
-package core
+package wlcore
 
 type Loptions struct {
 	Package string // 包名
