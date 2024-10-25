@@ -18,7 +18,7 @@ type LogFormatConfig struct {
 func NewLogFormatConfig() *LogFormatConfig {
 	return &LogFormatConfig{
 		Level:           zapcore.DebugLevel,
-		Prefix:          "[" + os.Args[0] + "]",
+		Prefix:          os.Args[0],
 		IsJson:          true,
 		EncoderLevel:    "LowercaseLevelEncoder",
 		StacktraceLevel: zapcore.ErrorLevel,

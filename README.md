@@ -18,7 +18,7 @@ WLog is a convenient and easy-to-use secondary encapsulation of ZapLog, providin
 **First:**
 
 ```bash
-go get -u github.com/WwhdsOne/Wlog
+go get -u github.com/WwhdsOne/Wlog@v1.0.0
 go get -u go.uber.org/zap 
 go get -u github.com/natefinch/lumberjack 
 go get -u github.com/IBM/sarama 
@@ -37,9 +37,9 @@ func main() {
 **Output:**
 
 ```bash
-{"level":"info","time":"2024-10-24 15:51:26.703","msg":"[[/tmp/GoLand/___go_build_WLogTest]] | LOL"}
-{"level":"warn","time":"2024-10-24 15:51:26.704","msg":"[[/tmp/GoLand/___go_build_WLogTest]] | LOL"}
-{"level":"debug","time":"2024-10-24 15:51:26.704","msg":"[[/tmp/GoLand/___go_build_WLogTest]] | LOL"}
+{"level":"info","time":"2024-10-24 15:51:26.703","msg":"[/tmp/GoLand/___go_build_WLogTest] | LOL"}
+{"level":"warn","time":"2024-10-24 15:51:26.704","msg":"[/tmp/GoLand/___go_build_WLogTest] | LOL"}
+{"level":"debug","time":"2024-10-24 15:51:26.704","msg":"[/tmp/GoLand/___go_build_WLogTest] | LOL"}
 ```
 
 # Usage
@@ -174,15 +174,17 @@ func main() {
 
 ```bash
 
-> JSON
-{"level":"info","time":"2024-10-23 14:14:48.293","msg":"[TEST-ZAP-JSON] package = test Info message LOL 123"}
-Message sent to partition 0 at offset 20116
-{"level":"info","time":"2024-10-23 14:14:48.295","msg":"[TEST-ZAP-JSON] package = test Info message LOL 123"}
-
 > Default
-2024-10-23 14:30:29.550 DEBUG   [TEST-ZAP-JSON] Debug message
-2024-10-23 14:30:29.550 INFO    [TEST-ZAP-JSON] package = test Info message LOL 123
-2024-10-23 14:30:29.550 WARN    [TEST-ZAP-JSON] package = test Warn message LOL 123
+2024-10-25 18:29:26.917 DEBUG   [TEST-ZAP-JSON] | Debug message
+2024-10-25 18:29:26.918 INFO    [TEST-ZAP-JSON] | package = test | Info message LOL 123
+2024-10-25 18:29:26.918 WARN    [TEST-ZAP-JSON] | package = test | Warn message LOL 123
+2024-10-25 18:29:26.918 ERROR   [TEST-ZAP-JSON] | package = test | Error messageLOL 123
+
+> Json
+{"level":"debug","time":"2024-10-25 18:30:29.731","msg":"[TEST-ZAP-JSON] | Debug message"}
+{"level":"info","time":"2024-10-25 18:30:29.732","msg":"[TEST-ZAP-JSON] | package = test | Info message LOL 123"}
+{"level":"warn","time":"2024-10-25 18:30:29.732","msg":"[TEST-ZAP-JSON] | package = test | Warn message LOL 123"}
+
 ```
 
 # Tips
@@ -202,6 +204,4 @@ newDefaultLogger.Info("LOL %d %s",&loptions)
 
 In this example, `%s` corresponds to the string `"LOL"`, and `%d` corresponds to the integer `1`.
 
-## Summary
-
-If you try to use placeholders like this, you should ensure that your arguments match the number and format of the options in the `log`.
+> If you try to use placeholders like this, you should ensure that your arguments match the number and format of the options in the `log`.
