@@ -24,3 +24,27 @@ func NewLogFormatConfig() *LogFormatConfig {
 		StacktraceLevel: zapcore.ErrorLevel,
 	}
 }
+
+type Rfc5424Config struct {
+	Hostname string
+	AppName  string
+}
+
+// FillEmptyLogFormat  设置默认日志格式
+func (lfc *LogFormatConfig) FillEmptyLogFormat() {
+
+	// 前缀为空则使用程序名
+	if lfc.Prefix == "" {
+		lfc.Prefix = os.Args[0]
+	}
+
+	// 编码等级为空则使用小写无色编码
+	if lfc.EncoderLevel == "" {
+		lfc.EncoderLevel = "LowercaseLevelEncoder"
+	}
+
+	// 堆栈跟踪等级为错误等级
+	if lfc.StacktraceLevel == nil {
+		lfc.StacktraceLevel = zapcore.ErrorLevel
+	}
+}

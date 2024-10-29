@@ -5,7 +5,6 @@ import (
 	"github.com/WwhdsOne/Wlog/wlcore"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"os"
 )
 
 const (
@@ -25,61 +24,43 @@ const (
 )
 
 type Logger struct {
-	l      *zap.Logger      // 日志实体
-	al     *zap.AtomicLevel // 日志等级
-	prefix string           // 日志前缀
+	l       *zap.Logger           // 日志实体
+	al      *zap.AtomicLevel      // 日志等级
+	prefix  string                // 日志前缀
+	rfc5424 *wlcore.Rfc5424Config // RFC5424配置
 }
 
 func Build(ls *wlcore.LogSummary) *Logger {
 
-	// 获取日志
-	lfc := fillEmptyLogFormat(ls.LogFormatConfig)
-	// 初始化日志等级，有对应的动态调整接口
+	// 获取日志设置
+	lfc := ls.LogFormatConfig
+	if lfc == nil {
+		lfc = wlcore.NewLogFormatConfig()
+	}
+	lfc.FillEmptyLogFormat()
 
+	// 初始化日志等级，有对应的动态调整接口
 	al := zap.NewAtomicLevelAt(lfc.Level)
 
 	// 初始化日志编码格式
-	encoder := wlcore.Encoder(lfc.EncoderLevel, lfc.IsJson)
+	var encoder zapcore.Encoder
+	if ls.Rfc5424Config == nil {
+		encoder = wlcore.Encoder(lfc.EncoderLevel, lfc.IsJson, false)
+	} else {
+		encoder = wlcore.Encoder(lfc.EncoderLevel, lfc.IsJson, true)
+	}
 
+	// 初始化日志输出
 	writers := ls.BuildWriters()
 
 	// 创建日志输出对象
 	Wzapcore := zapcore.NewCore(encoder, zapcore.NewMultiWriteSyncer(writers...), al)
 
 	return &Logger{
-		l:      zap.New(Wzapcore, zap.AddStacktrace(lfc.StacktraceLevel)),
-		al:     &al,
-		prefix: "[" + lfc.Prefix + "]",
-	}
-}
-
-// fillEmptyLogFormat 设置默认日志格式
-func fillEmptyLogFormat(lfc *wlcore.LogFormatConfig) *wlcore.LogFormatConfig {
-	if lfc == nil {
-		return wlcore.NewLogFormatConfig()
-	}
-
-	// 前缀为空则使用程序名
-	if lfc.Prefix == "" {
-		lfc.Prefix = os.Args[0]
-	}
-
-	// 编码等级为空则使用小写五色编码
-	if lfc.EncoderLevel == "" {
-		lfc.EncoderLevel = "LowercaseLevelEncoder"
-	}
-
-	// 堆栈跟踪等级为错误等级
-	if lfc.StacktraceLevel == nil {
-		lfc.StacktraceLevel = ErrorLevel
-	}
-	return lfc
-}
-
-// SetLevel 设置日志等级
-func (l *Logger) SetLevel(level zapcore.Level) {
-	if l.al != nil {
-		l.al.SetLevel(level)
+		l:       zap.New(Wzapcore, zap.AddStacktrace(lfc.StacktraceLevel)),
+		al:      &al,
+		prefix:  "[" + lfc.Prefix + "]",
+		rfc5424: ls.Rfc5424Config,
 	}
 }
 
@@ -90,6 +71,9 @@ func (l *Logger) formatMessage(msg string, loptions *wlcore.Loptions) string {
 	msg = l.prefix + " | " + msg
 	if len(loptions.Option) != 0 {
 		msg = fmt.Sprintf(msg, loptions.Option...)
+	}
+	if loptions.Rfc5424Message != nil {
+		msg = loptions.Rfc5424Message.FormatRfc5424Message(l.rfc5424.Hostname, l.rfc5424.AppName, msg)
 	}
 	return msg
 }
