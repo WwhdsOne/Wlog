@@ -7,6 +7,8 @@ import (
 	"time"
 )
 
+const RFC3339Micro = "2006-01-02T15:04:05.999999Z07:00"
+
 const (
 	Emergency = iota
 	Alert
@@ -104,7 +106,7 @@ func (r *Rfc5424Opt) FormatMessage(msgID, msg string, lv int) string {
 	pri := convertLogLevel(lv) + 8 // Assuming the facility is always user (1)
 
 	// Get the current timestamp in RFC 5424 format
-	timestamp := time.Now().UTC().Format(time.RFC3339)
+	timestamp := time.Now().Format(RFC3339Micro)
 
 	if msgID == "" {
 		msgID = "-"
