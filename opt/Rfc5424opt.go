@@ -116,7 +116,7 @@ func (r *Rfc5424Opt) FormatMessage(msgID, msg string, lv int) string {
 	structuredData := r.formatStructuredData()
 
 	// Construct the final log m
-	logMessage := fmt.Sprintf("<%d>1 %s %s %s %d %s %s %s",
+	logMessage := fmt.Sprintf("<%d>1 %s %s %s %d %s %s %s\n",
 		pri,
 		timestamp,
 		r.GetHostname(),
