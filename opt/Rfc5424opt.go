@@ -19,7 +19,8 @@ const (
 )
 
 type Rfc5424Opt struct {
-	StructuredData []StructuredData
+	Hostname, AppName string
+	StructuredData    []StructuredData
 }
 
 // SDParam represents parameters for structured data
@@ -98,7 +99,6 @@ func (r *Rfc5424Opt) formatStructuredData() string {
 
 // FormatMessage formats the given parameters into an RFC 5424 compliant log message
 func (r *Rfc5424Opt) FormatMessage(msgID, msg string, lv int) string {
-	hostname, _ := os.Hostname()
 
 	// Calculate the PRI value
 	pri := convertLogLevel(lv) + 8 // Assuming the facility is always user (1)
@@ -117,12 +117,26 @@ func (r *Rfc5424Opt) FormatMessage(msgID, msg string, lv int) string {
 	logMessage := fmt.Sprintf("<%d>1 %s %s %s %d %s %s %s",
 		pri,
 		timestamp,
-		hostname,
-		os.Args[0],
-		os.Getgid(),
+		r.GetHostname(),
+		r.GetAppName(),
+		os.Getpid(),
 		msgID,
 		structuredData,
 		msg,
 	)
 	return logMessage
+}
+
+func (r *Rfc5424Opt) GetAppName() string {
+	if r.AppName == "" {
+		r.AppName = os.Args[0]
+	}
+	return r.AppName
+}
+
+func (r *Rfc5424Opt) GetHostname() string {
+	if r.Hostname == "" {
+		r.Hostname, _ = os.Hostname()
+	}
+	return r.Hostname
 }
