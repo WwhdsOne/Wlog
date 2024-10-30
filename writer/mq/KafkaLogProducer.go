@@ -1,9 +1,9 @@
 package mq
 
 import (
+	"dev.aminer.cn/codegeex-enterprise/wlog"
 	"fmt"
 	"github.com/IBM/sarama"
-	"github.com/WwhdsOne/Wlog"
 	"log"
 )
 

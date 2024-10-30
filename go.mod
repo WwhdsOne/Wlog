@@ -1,6 +1,6 @@
 module dev.aminer.cn/codegeex-enterprise/wlog
 
-go 1.22
+go 1.22.1
 
 require (
 	github.com/IBM/sarama v1.43.3

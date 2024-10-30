@@ -1,8 +1,8 @@
 package WLog
 
 import (
+	"dev.aminer.cn/codegeex-enterprise/wlog/wlcore"
 	"fmt"
-	"github.com/WwhdsOne/Wlog/wlcore"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )

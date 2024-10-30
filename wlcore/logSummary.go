@@ -1,7 +1,7 @@
 package wlcore
 
 import (
-	"github.com/WwhdsOne/Wlog/writer"
+	"dev.aminer.cn/codegeex-enterprise/wlog/writer"
 	"go.uber.org/zap/zapcore"
 	"os"
 )

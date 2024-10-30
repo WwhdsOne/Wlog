@@ -1,7 +1,7 @@
 package sys
 
 import (
-	"github.com/WwhdsOne/Wlog"
+	"dev.aminer.cn/codegeex-enterprise/wlog"
 	"log/syslog"
 	"strconv"
 )
