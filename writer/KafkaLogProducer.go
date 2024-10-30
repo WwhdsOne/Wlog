@@ -1,7 +1,6 @@
-package mq
+package writer
 
 import (
-	"dev.aminer.cn/codegeex-enterprise/wlog"
 	"fmt"
 	"github.com/IBM/sarama"
 	"log"
@@ -39,7 +38,7 @@ func (k *KafkaLogProducer) Write(p []byte) (n int, err error) {
 	}
 	_, _, err = k.producer.SendMessage(message)
 	if err != nil {
-		WLog.Error(err.Error())
+		log.Printf("Failed to send message to Kafka: %s\n", err)
 		return 0, err
 	}
 	return len(p), nil

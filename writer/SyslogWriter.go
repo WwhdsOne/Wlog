@@ -1,7 +1,7 @@
-package sys
+package writer
 
 import (
-	"dev.aminer.cn/codegeex-enterprise/wlog"
+	"log"
 	"log/syslog"
 	"strconv"
 )
@@ -19,7 +19,7 @@ type SyslogWriter struct {
 func (s *SyslogWriter) InitWriter() {
 	writer, err := syslog.Dial(s.Network, s.Host+":"+strconv.Itoa(s.Port), s.Priority, s.Tag)
 	if err != nil {
-		WLog.Warn(err.Error())
+		log.Printf("Failed to connect to syslog server: %s\n", err)
 	}
 	s.SysWriter = writer
 }

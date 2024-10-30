@@ -1,4 +1,4 @@
-package file
+package writer
 
 import (
 	"github.com/natefinch/lumberjack"
