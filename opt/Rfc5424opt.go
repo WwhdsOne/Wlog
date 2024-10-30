@@ -149,9 +149,21 @@ func (r *Rfc5424Opt) FormatMessage(msgID, msg string, lv int) string {
 }
 
 func (r *Rfc5424Opt) GetAppName() string {
+	// 如果appName为空字符串的话，使用os.Args[0]作为默认值
 	if r.AppName == "" {
-		r.AppName = os.Args[0]
+		appName := os.Args[0]
+		// 如果appName中包含路径的话，那么就截取路径后面的部分
+		if start := strings.LastIndex(appName, "/"); start != -1 {
+			appName = appName[start+1:]
+		}
+		r.AppName = appName
 	}
+
+	// 如果长度大于48那么进行截取
+	if len(r.AppName) > 48 {
+		r.AppName = r.AppName[len(r.AppName)-48:]
+	}
+
 	return r.AppName
 }
 
