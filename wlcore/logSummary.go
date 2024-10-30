@@ -11,7 +11,7 @@ type LogSummary struct {
 	KafkaWriter     writer.LogWriter // 向各类消息队列发送日志信息
 	SysLogWriter    writer.LogWriter // syslog形式的日志
 	LogFormatConfig *LogFormatConfig // 日志格式配置
-	Rfc5424Config   *Rfc5424Config   // syslog形式的日志
+	Rfc5424Config   *Rfc5424Config   // Rfc5424的日志配置
 }
 
 // BuildWriters 新增符合zap要求的Writer

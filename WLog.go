@@ -72,33 +72,39 @@ func (l *Logger) formatMessage(msg string, loptions *wlcore.Loptions) string {
 	if len(loptions.Option) != 0 {
 		msg = fmt.Sprintf(msg, loptions.Option...)
 	}
-	if loptions.Rfc5424Message != nil {
-		msg = loptions.Rfc5424Message.FormatRfc5424Message(l.rfc5424.Hostname, l.rfc5424.AppName, msg)
+	if l.rfc5424 != nil {
+		msg = loptions.FormatRfc5424Message(l.rfc5424.Hostname, l.rfc5424.AppName, msg)
 	}
 	return msg
 }
 
 func (l *Logger) Debug(msg string, loptions *wlcore.Loptions) {
+	loptions.SetRfcLevel(wlcore.Debug)
 	l.l.Debug(l.formatMessage(msg, loptions))
 }
 
 func (l *Logger) Info(msg string, loptions *wlcore.Loptions) {
+	loptions.SetRfcLevel(wlcore.Info)
 	l.l.Info(l.formatMessage(msg, loptions))
 }
 
 func (l *Logger) Warn(msg string, loptions *wlcore.Loptions) {
+	loptions.SetRfcLevel(wlcore.Warning)
 	l.l.Warn(l.formatMessage(msg, loptions))
 }
 
 func (l *Logger) Error(msg string, loptions *wlcore.Loptions) {
+	loptions.SetRfcLevel(wlcore.Error)
 	l.l.Error(l.formatMessage(msg, loptions))
 }
 
 func (l *Logger) Panic(msg string, loptions *wlcore.Loptions) {
+	loptions.SetRfcLevel(wlcore.Crit)
 	l.l.Panic(l.formatMessage(msg, loptions))
 }
 
 func (l *Logger) Fatal(msg string, loptions *wlcore.Loptions) {
+	loptions.SetRfcLevel(wlcore.Emergency)
 	l.l.Fatal(l.formatMessage(msg, loptions))
 }
 

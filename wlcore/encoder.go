@@ -23,6 +23,9 @@ func Encoder(encodeLevel string, isJson, adaptRfc5424 bool) zapcore.Encoder {
 		}
 		config.TimeKey = "time"
 		config.LevelKey = "level"
+	} else {
+		config.TimeKey = ""
+		config.LevelKey = ""
 	}
 	// 根据配置中的格式选择编码器
 	if isJson == true {
