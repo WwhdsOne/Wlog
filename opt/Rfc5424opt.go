@@ -80,6 +80,25 @@ func (r *Rfc5424Opt) AddDatum(ID string, Name string, Value string) {
 	})
 }
 
+// SetDatum sets structured data to a log message
+func (r *Rfc5424Opt) SetDatum(ID string, Name string, Value string) {
+	for i, sd := range r.StructuredData {
+		if sd.ID == ID {
+			for j, param := range sd.Parameters {
+				if param.Name == Name {
+					sd.Parameters[j].Value = Value
+					r.StructuredData[i] = sd
+					return
+				}
+			}
+			sd.Parameters = append(sd.Parameters, SDParam{Name: Name, Value: Value})
+			r.StructuredData[i] = sd
+			return
+		}
+	}
+	r.AddDatum(ID, Name, Value)
+}
+
 // formatStructuredData formats the structured data into the RFC 5424 format
 func (r *Rfc5424Opt) formatStructuredData() string {
 	data := r.StructuredData
