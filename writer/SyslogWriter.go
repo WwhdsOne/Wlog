@@ -1,30 +1,10 @@
 package writer
 
 import (
-	"fmt"
 	"log"
 	"log/syslog"
 	"net"
 )
-
-func init() {
-	socket, err := net.DialUDP("udp", nil, &net.UDPAddr{
-		IP:   net.IPv4(10, 50, 34, 72),
-		Port: 51898,
-	})
-	if err != nil {
-		fmt.Println("连接服务端失败，err:", err)
-		return
-	}
-	defer socket.Close()
-	fmt.Println(string(b))
-	x, err := socket.Write(b)
-	if err != nil {
-		fmt.Println("发送数据失败，err:", err)
-		return
-	}
-	fmt.Println("发送成功，发送字节数：", x)
-}
 
 type SyslogWriter struct {
 	Network  string          //网络通信方式
