@@ -1,4 +1,4 @@
-module github.com/WwhdsOne/Wlog
+module dev.aminer.cn/codegeex-enterprise/wlog
 
 go 1.22
 
