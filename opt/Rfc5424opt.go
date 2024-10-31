@@ -103,7 +103,7 @@ func (r *Rfc5424Opt) SetDatum(ID string, Name string, Value string) {
 func (r *Rfc5424Opt) formatStructuredData() string {
 	data := r.StructuredData
 	if len(data) == 0 {
-		return "[]"
+		return "-"
 	}
 
 	var sb strings.Builder
@@ -129,6 +129,10 @@ func (r *Rfc5424Opt) FormatMessage(msgID, msg string, lv int) string {
 
 	if msgID == "" {
 		msgID = "-"
+	}
+
+	if msg == "" {
+		msg = "-"
 	}
 
 	// Format the structured data
