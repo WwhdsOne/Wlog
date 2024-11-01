@@ -5,6 +5,7 @@ import (
 	"dev.aminer.cn/codegeex-enterprise/wlog/writer"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
+	"sync"
 )
 
 const (
@@ -17,8 +18,9 @@ const (
 )
 
 type Logger struct {
-	l   *zap.Logger // 日志实体
-	Opt opt.Option  // 日志选项接口
+	l   *zap.Logger  // 日志实体
+	Opt opt.Option   // 日志选项接口
+	rw  sync.RWMutex // opt切换读写锁
 }
 
 func Build(ls *writer.WLogWriters, option opt.Option) *Logger {
@@ -61,29 +63,43 @@ func newEncoder() zapcore.Encoder {
 }
 
 func (l *Logger) WithOption(o opt.Option) {
+	l.rw.Lock()
+	defer l.rw.Unlock()
 	l.Opt = o
 }
 
 func (l *Logger) Debug(msgID, msg string) {
+	l.rw.RLock()
+	defer l.rw.RUnlock()
 	l.l.Debug(l.Opt.FormatMessage(msgID, msg, DEBUG))
 }
 
 func (l *Logger) Info(msgID, msg string) {
+	l.rw.RLock()
+	defer l.rw.RUnlock()
 	l.l.Info(l.Opt.FormatMessage(msgID, msg, INFO))
 }
 
 func (l *Logger) Warn(msgID, msg string) {
+	l.rw.RLock()
+	defer l.rw.RUnlock()
 	l.l.Warn(l.Opt.FormatMessage(msgID, msg, WARN))
 }
 
 func (l *Logger) Error(msgID, msg string) {
+	l.rw.RLock()
+	defer l.rw.RUnlock()
 	l.l.Error(l.Opt.FormatMessage(msgID, msg, ERROR))
 }
 
 func (l *Logger) Panic(msgID, msg string) {
+	l.rw.RLock()
+	defer l.rw.RUnlock()
 	l.l.Panic(l.Opt.FormatMessage(msgID, msg, PANIC))
 }
 
 func (l *Logger) Fatal(msgID, msg string) {
+	l.rw.RLock()
+	defer l.rw.RUnlock()
 	l.l.Fatal(l.Opt.FormatMessage(msgID, msg, FATAL))
 }
