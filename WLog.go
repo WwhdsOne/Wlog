@@ -1,8 +1,8 @@
 package WLog
 
 import (
-	"dev.aminer.cn/codegeex-enterprise/wlog/opt"
-	"dev.aminer.cn/codegeex-enterprise/wlog/writer"
+	"dev.aminer.cn/codegeex-enterprise/cgxlog/cgx-wlog-go.git/opt"
+	"dev.aminer.cn/codegeex-enterprise/cgxlog/cgx-wlog-go.git/writer"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"sync"
