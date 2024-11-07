@@ -1,4 +1,4 @@
-module dev.aminer.cn/codegeex-enterprise/wlog
+module dev.aminer.cn/codegeex-enterprise/cgxlog/cgx-wlog-go.git
 
 go 1.22.1
 
