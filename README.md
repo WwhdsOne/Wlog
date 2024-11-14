@@ -1,93 +1,108 @@
-# cgx-wlog-go
+# WLog
 
+**WLog** 是一个便捷且易于使用的 ZapLog 二次封装，WLog 可以使用 RFC5424格式，支持上报消息队列、文件日志和 syslog。以满足更广泛的日志记录需求。
 
+## 环境需求
 
-## Getting started
+- Go: >=1.22.1
+- OS: Linux / MacOS / Windows
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+## 特性
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+- **多种设置封装**：提供对各种设置的封装，允许通过简单的配置完成格式化日志记录。
+- **默认日志轮转功能**：提供默认的日志轮转功能。
+- **支持消息队列**：支持消息队列（目前仅支持发送到 Kafka 中的指定主题）。
 
-## Add your files
+# 快速开始
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+**首先**
 
+```bash
+go get -u github.com/WwhdsOne/Wlog
 ```
-cd existing_repo
-git remote add origin https://dev.aminer.cn/codegeex-enterprise/cgxlog/cgx-wlog-go.git
-git branch -M main
-git push -uf origin main
+
+**新建一个日志并调用方法**
+
+```go
+func main() {
+  // 创建一个测试日志记录器
+  DefaultLogger := WLog.Build(&writer.WLogWriters{}, nil)
+  // 打印日志
+  DefaultLogger.Debug("233", "Debug message")
+  DefaultLogger.Warn("233", "Warn message")
+  DefaultLogger.Info("233", "Info message")
+}
 ```
 
-## Integrate with your tools
+**控制台打印**
 
-- [ ] [Set up project integrations](https://dev.aminer.cn/codegeex-enterprise/cgxlog/cgx-wlog-go/-/settings/integrations)
+```bash
+<15>1 2024-10-30T18:58:35.901214+08:00 wangwenhaideMacBook-Air.local eex_enterprise_wlog_test__TestDefaultLogger.test 67231 233 [] Debug message
+<14>1 2024-10-30T18:58:35.902344+08:00 wangwenhaideMacBook-Air.local eex_enterprise_wlog_test__TestDefaultLogger.test 67231 233 [] Info message
+<12>1 2024-10-30T18:58:35.902377+08:00 wangwenhaideMacBook-Air.local eex_enterprise_wlog_test__TestDefaultLogger.test 67231 233 [] Warn message
+```
 
-## Collaborate with your team
+# 使用
 
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
+## 指定文件对象
 
-## Test and Deploy
+```go
+f := &writer.LocalFileLogWriter{
+  FileName:    "test.log",
+  FileDirPath: "./log",
+}
 
-Use the built-in continuous integration in GitLab.
+lumberjackLogger := WLog.Build(&writer.WLogWriters{
+  LocalFileWriter: f,
+}, nil)
+```
 
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+文件对象自带日志切割，属性如下
 
-***
+```go
+lumberJackLogger := &lumberjack.Logger{
+  Filename:   filename, // 文件位置
+  MaxSize:    10,       // 进行切割之前,日志文件的最大大小(MB为单位)
+  MaxAge:     7,        // 保留旧文件的最大天数
+  MaxBackups: 10,       // 保留旧文件的最大个数
+  Compress:   false,    // 是否压缩/归档旧文件
+  LocalTime:  true,     // 是否使用本地时间
+}
+```
 
-# Editing this README
+## 指定Kafka和Topic
 
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
+```go
+k := &writer.KafkaLogProducer{
+  Topic:     "test-topic",
+  Partition: 0,
+  Host:      "localhost",
+  Port:      9092,
+}
+// 创建一个测试日志记录器
+l := &writer.WLogWriters{
+  KafkaWriter: k,
+}
+KafkaLogger := WLog.Build(l, nil)
+```
 
-## Suggestions for a good README
+## 指定Syslog
 
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
+```go
+s := &writer.SyslogWriter{
+  Host:     "47.93.83.136",
+  Port:     515,
+  Network:  "udp",
+  Priority: syslog.LOG_INFO,
+  Tag:      "WWh",
+}
 
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
-
-## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
-
-## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
-
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
-
-## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
-
-## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
-
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
-
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
-
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
-
-## License
-For open source projects, say how it is licensed.
-
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+// 创建一个测试日志记录器
+r := opt.Rfc5424Opt{
+  //AppName: "/var/folders/4c/j8r4jbh539s_gkfxssjw9dtm0000gp/T/go-build2659986742/b001/exe/main",
+}
+r.AddDatum("233", "777", "666")
+Rfc5424Logger := WLog.Build(&writer.WLogWriters{
+  SysLogWriter: s,
+}, &r)
+```
