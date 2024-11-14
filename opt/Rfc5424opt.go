@@ -144,7 +144,7 @@ func (r *Rfc5424Opt) GetHostname() string {
 	return r.Hostname
 }
 
-func (r *Rfc5424Opt) FormatMessage(msgID string, lv int, format string, args ...any) string {
+func (r *Rfc5424Opt) FormatMessage(msgID string, lv int, format string, args []any) string {
 
 	// Calculate the PRI value
 	pri := convertLogLevel(lv) + 8 // Assuming the facility is always user (1)
@@ -159,7 +159,7 @@ func (r *Rfc5424Opt) FormatMessage(msgID string, lv int, format string, args ...
 	msg := "-"
 	if format != "" {
 		msg = format
-		if len(args) > 0 && args[0] != nil {
+		if len(args) > 0 {
 			msg = fmt.Sprintf(format, args...)
 		}
 	}
