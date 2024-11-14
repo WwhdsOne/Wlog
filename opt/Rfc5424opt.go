@@ -159,6 +159,8 @@ func (r *Rfc5424Opt) FormatMessage(msgID string, lv int, format string, args ...
 	msg := "-"
 	if format != "" {
 		msg = format
+		fmt.Println(args)
+		fmt.Println(args[0])
 		if len(args) > 0 && args[0] != nil {
 			msg = fmt.Sprintf(format, args...)
 		}
