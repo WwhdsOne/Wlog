@@ -1,6 +1,6 @@
 # WLog
 
-**WLog** 是一个便捷且易于使用的 ZapLog 二次封装，WLog 可以使用 RFC5424格式，支持上报消息队列、文件日志和 syslog。以满足更广泛的日志记录需求。
+**WLog** 是一个便捷且易于使用的 ZapLog 二次封装，WLog 可以使用 RFC5424 格式，支持上报消息队列、文件日志和 syslog。以满足更广泛的日志记录需求。
 
 ## 环境需求
 
@@ -18,7 +18,7 @@
 **首先**
 
 ```bash
-go get -u github.com/WwhdsOne/Wlog
+go get -u dev.aminer.cn/codegeex-enterprise/cgxlog/cgx-wlog-go.git
 ```
 
 **新建一个日志并调用方法**
@@ -30,7 +30,7 @@ func main() {
   // 打印日志
   DefaultLogger.Debug("233", "Debug message")
   DefaultLogger.Warn("233", "Warn message")
-  DefaultLogger.Info("233", "Info message")
+  DefaultLogger.Info("233", "Info message, info = %s", "some_info")
 }
 ```
 
@@ -70,7 +70,7 @@ lumberJackLogger := &lumberjack.Logger{
 }
 ```
 
-## 指定Kafka和Topic
+## 指定 Kafka 和 Topic
 
 ```go
 k := &writer.KafkaLogProducer{
@@ -86,7 +86,7 @@ l := &writer.WLogWriters{
 KafkaLogger := WLog.Build(l, nil)
 ```
 
-## 指定Syslog
+## 指定 Syslog
 
 ```go
 s := &writer.SyslogWriter{

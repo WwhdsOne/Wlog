@@ -1,5 +1,6 @@
 package opt
 
 type Option interface {
-	FormatMessage(msgID, msg string, lv int) string
+	//FormatMessage(msgID string, lv int, msg string) string
+	FormatMessage(msgID string, lv int, format string, args ...any) string
 }

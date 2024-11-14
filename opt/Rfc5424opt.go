@@ -118,40 +118,6 @@ func (r *Rfc5424Opt) formatStructuredData() string {
 	return sb.String()
 }
 
-// FormatMessage formats the given parameters into an RFC 5424 compliant log message
-func (r *Rfc5424Opt) FormatMessage(msgID, msg string, lv int) string {
-
-	// Calculate the PRI value
-	pri := convertLogLevel(lv) + 8 // Assuming the facility is always user (1)
-
-	// Get the current timestamp in RFC 5424 format
-	timestamp := time.Now().Format(RFC3339Micro)
-
-	if msgID == "" {
-		msgID = "-"
-	}
-
-	if msg == "" {
-		msg = "-"
-	}
-
-	// Format the structured data
-	structuredData := r.formatStructuredData()
-
-	// Construct the final log m
-	logMessage := fmt.Sprintf("<%d>1 %s %s %s %d %s %s %s\n",
-		pri,
-		timestamp,
-		r.GetHostname(),
-		r.GetAppName(),
-		os.Getpid(),
-		msgID,
-		structuredData,
-		msg,
-	)
-	return logMessage
-}
-
 func (r *Rfc5424Opt) GetAppName() string {
 	// 如果appName为空字符串的话，使用os.Args[0]作为默认值
 	if r.AppName == "" {
@@ -176,4 +142,41 @@ func (r *Rfc5424Opt) GetHostname() string {
 		r.Hostname, _ = os.Hostname()
 	}
 	return r.Hostname
+}
+
+func (r *Rfc5424Opt) FormatMessage(msgID string, lv int, format string, args ...any) string {
+
+	// Calculate the PRI value
+	pri := convertLogLevel(lv) + 8 // Assuming the facility is always user (1)
+
+	// Get the current timestamp in RFC 5424 format
+	timestamp := time.Now().Format(RFC3339Micro)
+
+	if msgID == "" {
+		msgID = "-"
+	}
+
+	msg := "-"
+	if format != "" {
+		msg = format
+		if len(args) > 0 {
+			msg = fmt.Sprintf(format, args...)
+		}
+	}
+
+	// Format the structured data
+	structuredData := r.formatStructuredData()
+
+	// Construct the final log m
+	logMessage := fmt.Sprintf("<%d>1 %s %s %s %d %s %s %s\n",
+		pri,
+		timestamp,
+		r.GetHostname(),
+		r.GetAppName(),
+		os.Getpid(),
+		msgID,
+		structuredData,
+		msg,
+	)
+	return logMessage
 }

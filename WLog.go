@@ -1,11 +1,13 @@
 package WLog
 
 import (
-	"dev.aminer.cn/codegeex-enterprise/cgxlog/cgx-wlog-go.git/opt"
-	"dev.aminer.cn/codegeex-enterprise/cgxlog/cgx-wlog-go.git/writer"
+	"sync"
+
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"sync"
+
+	"dev.aminer.cn/codegeex-enterprise/cgxlog/cgx-wlog-go.git/opt"
+	"dev.aminer.cn/codegeex-enterprise/cgxlog/cgx-wlog-go.git/writer"
 )
 
 const (
@@ -68,38 +70,38 @@ func (l *Logger) WithOption(o opt.Option) {
 	l.Opt = o
 }
 
-func (l *Logger) Debug(msgID, msg string) {
+func (l *Logger) Debug(msgID, format string, args ...any) {
 	l.rw.RLock()
 	defer l.rw.RUnlock()
-	l.l.Debug(l.Opt.FormatMessage(msgID, msg, DEBUG))
+	l.l.Debug(l.Opt.FormatMessage(msgID, DEBUG, format, args))
 }
 
-func (l *Logger) Info(msgID, msg string) {
+func (l *Logger) Info(msgID, format string, args ...any) {
 	l.rw.RLock()
 	defer l.rw.RUnlock()
-	l.l.Info(l.Opt.FormatMessage(msgID, msg, INFO))
+	l.l.Info(l.Opt.FormatMessage(msgID, INFO, format, args))
 }
 
-func (l *Logger) Warn(msgID, msg string) {
+func (l *Logger) Warn(msgID, format string, args ...any) {
 	l.rw.RLock()
 	defer l.rw.RUnlock()
-	l.l.Warn(l.Opt.FormatMessage(msgID, msg, WARN))
+	l.l.Warn(l.Opt.FormatMessage(msgID, WARN, format, args))
 }
 
-func (l *Logger) Error(msgID, msg string) {
+func (l *Logger) Error(msgID, format string, args ...any) {
 	l.rw.RLock()
 	defer l.rw.RUnlock()
-	l.l.Error(l.Opt.FormatMessage(msgID, msg, ERROR))
+	l.l.Error(l.Opt.FormatMessage(msgID, ERROR, format, args))
 }
 
-func (l *Logger) Panic(msgID, msg string) {
+func (l *Logger) Panic(msgID, format string, args ...any) {
 	l.rw.RLock()
 	defer l.rw.RUnlock()
-	l.l.Panic(l.Opt.FormatMessage(msgID, msg, PANIC))
+	l.l.Panic(l.Opt.FormatMessage(msgID, PANIC, format, args))
 }
 
-func (l *Logger) Fatal(msgID, msg string) {
+func (l *Logger) Fatal(msgID, format string, args ...any) {
 	l.rw.RLock()
 	defer l.rw.RUnlock()
-	l.l.Fatal(l.Opt.FormatMessage(msgID, msg, FATAL))
+	l.l.Fatal(l.Opt.FormatMessage(msgID, FATAL, format, args))
 }
