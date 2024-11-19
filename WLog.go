@@ -27,16 +27,29 @@ type Logger struct {
 	rw  sync.RWMutex // opt切换读写锁
 }
 
-func Build(level Level, ls *writer.WLogWriters, option opt.Option) *Logger {
+func Build(level string, ls *writer.WLogWriters, option opt.Option) *Logger {
 
 	// 初始化日志输出
 	writers := ls.BuildWriters()
 
 	// 创建日志输出对象
-	Wzapcore := zapcore.NewCore(
-		newEncoder(),                               // 编码器
-		zapcore.NewMultiWriteSyncer(writers...),    // 写入对象
-		zap.NewAtomicLevelAt(zapcore.Level(level)), // 日志级别
+
+	lv := zap.NewAtomicLevelAt(zap.DebugLevel)
+	switch level {
+	case "debug":
+		lv = zap.NewAtomicLevelAt(zap.DebugLevel)
+	case "info":
+		lv = zap.NewAtomicLevelAt(zap.InfoLevel)
+	case "warn":
+		lv = zap.NewAtomicLevelAt(zap.WarnLevel)
+	case "error":
+		lv = zap.NewAtomicLevelAt(zap.ErrorLevel)
+	}
+
+	wZapCore := zapcore.NewCore(
+		newEncoder(),                            // 编码器
+		zapcore.NewMultiWriteSyncer(writers...), // 写入对象
+		lv,
 	)
 	// 默认Rfc5424
 	if option == nil {
@@ -44,7 +57,7 @@ func Build(level Level, ls *writer.WLogWriters, option opt.Option) *Logger {
 	}
 
 	return &Logger{
-		l:   zap.New(Wzapcore, zap.AddStacktrace(zapcore.ErrorLevel)),
+		l:   zap.New(wZapCore, zap.AddStacktrace(zapcore.ErrorLevel)),
 		Opt: option,
 	}
 }
