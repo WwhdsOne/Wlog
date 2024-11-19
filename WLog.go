@@ -1,6 +1,7 @@
 package WLog
 
 import (
+	"strings"
 	"sync"
 
 	"go.uber.org/zap"
@@ -29,6 +30,7 @@ type Logger struct {
 
 func Build(level string, ls *writer.WLogWriters, option opt.Option) *Logger {
 
+	level = strings.ToLower(level)
 	// 初始化日志输出
 	writers := ls.BuildWriters()
 
