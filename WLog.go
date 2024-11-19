@@ -19,22 +19,24 @@ const (
 	PANIC
 )
 
+type Level int8
+
 type Logger struct {
 	l   *zap.Logger  // 日志实体
 	Opt opt.Option   // 日志选项接口
 	rw  sync.RWMutex // opt切换读写锁
 }
 
-func Build(ls *writer.WLogWriters, option opt.Option) *Logger {
+func Build(level Level, ls *writer.WLogWriters, option opt.Option) *Logger {
 
 	// 初始化日志输出
 	writers := ls.BuildWriters()
 
 	// 创建日志输出对象
 	Wzapcore := zapcore.NewCore(
-		newEncoder(),                             // 编码器
-		zapcore.NewMultiWriteSyncer(writers...),  // 写入对象
-		zap.NewAtomicLevelAt(zapcore.DebugLevel), // 日志级别
+		newEncoder(),                               // 编码器
+		zapcore.NewMultiWriteSyncer(writers...),    // 写入对象
+		zap.NewAtomicLevelAt(zapcore.Level(level)), // 日志级别
 	)
 	// 默认Rfc5424
 	if option == nil {
@@ -104,4 +106,12 @@ func (l *Logger) Fatal(msgID, format string, args ...any) {
 	l.rw.RLock()
 	defer l.rw.RUnlock()
 	l.l.Fatal(l.Opt.FormatMessage(msgID, FATAL, format, args))
+}
+
+func (l *Logger) Level() Level {
+	return Level(l.l.Level())
+}
+
+func (l *Logger) LevelString() string {
+	return l.l.Level().String()
 }
