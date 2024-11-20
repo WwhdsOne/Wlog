@@ -133,7 +133,11 @@ func (l *Logger) Ctx(ctx context.Context) *Logger {
 }
 
 func (l *Logger) WithContextKeys(keys []any) {
-	l.ctxKeys = append(l.ctxKeys, keys...)
+	if l.ctxKeys == nil {
+		l.ctxKeys = keys
+	} else {
+		l.ctxKeys = append(l.ctxKeys, keys...)
+	}
 	l.Opt.WithContextKeys(keys)
 }
 
