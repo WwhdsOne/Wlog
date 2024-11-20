@@ -25,6 +25,7 @@ type Rfc5424Opt struct {
 	Hostname, AppName string
 	StructuredData    []StructuredData
 	ctx               context.Context
+	ctxKeys           []any
 }
 
 // SDParam represents parameters for structured data
@@ -151,17 +152,25 @@ func (r *Rfc5424Opt) WithContext(ctx context.Context) {
 }
 
 func (r *Rfc5424Opt) WithContextKeys(keys []any) {
+	r.ctxKeys = keys
+}
+
+func (r *Rfc5424Opt) setContextDatum() {
 	datumID := "ctx"
-	for _, k := range keys {
+	if r.ctxKeys == nil || len(r.ctxKeys) == 0 || r.ctx == nil {
+		return
+	}
+	for _, k := range r.ctxKeys {
 		if v, ok := r.ctx.Value(k).(string); ok {
 			if kStr, ok := k.(string); ok {
-				r.AddDatum(datumID, kStr, v)
+				r.SetDatum(datumID, kStr, v)
 			}
 		}
 	}
 }
-
 func (r *Rfc5424Opt) FormatMessage(msgID string, lv int, format string, args []any) string {
+
+	r.setContextDatum()
 
 	// Calculate the PRI value
 	pri := convertLogLevel(lv) + 8 // Assuming the facility is always user (1)
