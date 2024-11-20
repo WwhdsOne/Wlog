@@ -1,6 +1,7 @@
 package WLog
 
 import (
+	"context"
 	"strings"
 	"sync"
 
@@ -23,9 +24,11 @@ const (
 type Level int8
 
 type Logger struct {
-	l   *zap.Logger  // 日志实体
-	Opt opt.Option   // 日志选项接口
-	rw  sync.RWMutex // opt切换读写锁
+	l       *zap.Logger  // 日志实体
+	Opt     opt.Option   // 日志选项接口
+	rw      sync.RWMutex // opt切换读写锁
+	ctx     context.Context
+	ctxKeys []any
 }
 
 func Build(level string, ls *writer.WLogWriters, option opt.Option) *Logger {
@@ -121,6 +124,17 @@ func (l *Logger) Fatal(msgID, format string, args ...any) {
 	l.rw.RLock()
 	defer l.rw.RUnlock()
 	l.l.Fatal(l.Opt.FormatMessage(msgID, FATAL, format, args))
+}
+
+func (l *Logger) Ctx(ctx context.Context) *Logger {
+	l.ctx = ctx
+	l.Opt.WithContext(ctx)
+	return l
+}
+
+func (l *Logger) WithContextKeys(keys []any) {
+	l.ctxKeys = append(l.ctxKeys, keys...)
+	l.Opt.WithContextKeys(keys)
 }
 
 func (l *Logger) Level() Level {

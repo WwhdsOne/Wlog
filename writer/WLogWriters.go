@@ -1,9 +1,12 @@
 package writer
 
 import (
-	"go.uber.org/zap/zapcore"
 	"os"
+
+	"go.uber.org/zap/zapcore"
 )
+
+var DefaultWLogWriter = &WLogWriters{}
 
 type WLogWriters struct {
 	LocalFileWriter logWriter // 本地文件日志写入

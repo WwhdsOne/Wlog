@@ -1,6 +1,7 @@
 package opt
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"strings"
@@ -23,6 +24,7 @@ const (
 type Rfc5424Opt struct {
 	Hostname, AppName string
 	StructuredData    []StructuredData
+	ctx               context.Context
 }
 
 // SDParam represents parameters for structured data
@@ -142,6 +144,21 @@ func (r *Rfc5424Opt) GetHostname() string {
 		r.Hostname, _ = os.Hostname()
 	}
 	return r.Hostname
+}
+
+func (r *Rfc5424Opt) WithContext(ctx context.Context) {
+	r.ctx = ctx
+}
+
+func (r *Rfc5424Opt) WithContextKeys(keys []any) {
+	datumID := "ctx"
+	for _, k := range keys {
+		if v, ok := r.ctx.Value(k).(string); ok {
+			if kStr, ok := k.(string); ok {
+				r.AddDatum(datumID, kStr, v)
+			}
+		}
+	}
 }
 
 func (r *Rfc5424Opt) FormatMessage(msgID string, lv int, format string, args []any) string {
